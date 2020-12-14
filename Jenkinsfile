@@ -30,7 +30,7 @@ pipeline {
                         clusterName: "cluster-1",
                         zone: "us-central1-c",
                         manifestPattern: 'src/',
-                        credentialsId: "practical-case-298304",
+                        credentialsId: "gke",
                         verifyDeployments: false])
                     echo "Pipeline has been successfully completed"
                 }
