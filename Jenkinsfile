@@ -18,7 +18,7 @@ pipeline {
                 git branch: 'patch-1', url: 'https://github.com/Sarthak100794/rock-paper-scissors'
 
                 // Run Maven on a Unix agent.
-                sh "mvn clean package"
+                sh "mvn clean install"
                 sh "cat /var/jenkins_home/secrets/master.key"
                 script {
                      dockerImage = docker.build registry
