@@ -1,4 +1,9 @@
 pipeline {
+    environment { 
+        registry = "sart1007/firstregistery" 
+        registryCredential = 'dockerhub_id' 
+        dockerImage = '' 
+    }
     agent any
 
     tools {
