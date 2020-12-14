@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: tomcat-image
+  labels:
+     app: hello
+spec:
+  containers:
+  - name: private-reg-container
+    image: nginx
