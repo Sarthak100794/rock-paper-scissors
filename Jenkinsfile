@@ -29,7 +29,7 @@ pipeline {
                         projectId: "practical-case-298304",
                         clusterName: "cluster-1",
                         zone: "us-central1-c",
-                        manifestPattern: 'src/',
+                        manifestPattern: 'deployment.yaml',
                         credentialsId: "gke",
                         verifyDeployments: false])
                     echo "Pipeline has been successfully completed"
