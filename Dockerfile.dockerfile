@@ -1,3 +1,2 @@
-FROM tomcat:8.0
-MAINTAINER mugunthan
-COPY rps.war /usr/local/tomcat/webapps/
+FROM bitnami/tomcat
+COPY rps.war /opt/bitnami/tomcat/webapps/
