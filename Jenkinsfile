@@ -16,7 +16,7 @@ pipeline {
                 sh "mvn clean package"
                 sh "cat /var/jenkins_home/secrets/master.key"
                 script {
-                     docker.build registry 
+                     dockerImage = docker.build registry + ":$BUILD_NUMBER" 
                       }
 
                 // To run Maven on a Windows agent, use
