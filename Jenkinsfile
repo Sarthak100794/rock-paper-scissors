@@ -24,7 +24,14 @@ pipeline {
                 // If Maven was able to run the tests, even if some of the test
                 // failed, record the test results and archive the jar file.
                 success {
-                    step <object of type com.google.jenkins.plugins.k8sengine.KubernetesEngineBuilder>
+                    git url: 'https://github.com/viglesiasce/sample-app'
+                step([$class: 'KubernetesEngineBuilder', 
+                        projectId: "practical-case-298304",
+                        clusterName: "cluster-1",
+                        zone: "us-central1-c",
+                        manifestPattern: 'src/',
+                        credentialsId: "practical-case-298304",
+                        verifyDeployments: false])
                     echo "Pipeline has been successfully completed"
                 }
             }
