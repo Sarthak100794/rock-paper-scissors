@@ -24,7 +24,7 @@ pipeline {
                 // If Maven was able to run the tests, even if some of the test
                 // failed, record the test results and archive the jar file.
                 success {
-                    git url: 'https://github.com/viglesiasce/sample-app'
+                    git branch: 'patch-1', url: 'https://github.com/Sarthak100794/rock-paper-scissors'
                 step([$class: 'KubernetesEngineBuilder', 
                         projectId: "practical-case-298304",
                         clusterName: "cluster-1",
