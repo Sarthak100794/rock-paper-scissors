@@ -1,7 +1,7 @@
 pipeline {
     environment { 
-        registry = "sart1007/firstregistery" 
-        registryCredential = 'dockerhub_id' 
+        registry = "sart1007/newrepo" 
+        registryCredential = 'dockerhub' 
         dockerImage = '' 
     }
     agent any
@@ -18,11 +18,16 @@ pipeline {
                 git branch: 'patch-1', url: 'https://github.com/Sarthak100794/rock-paper-scissors'
 
                 // Run Maven on a Unix agent.
-                sh "mvn clean install"
+                sh "mvn clean package"
                 sh "cat /var/jenkins_home/secrets/master.key"
                 script {
                      dockerImage = docker.build registry
                       }
+                script {
+                           docker.withRegistry( '', registryCredential ) {
+                                dockerImage.push()
+                           }
+                }    
 
                 // To run Maven on a Windows agent, use
                 // bat "mvn -Dmaven.test.failure.ignore=true clean package"
