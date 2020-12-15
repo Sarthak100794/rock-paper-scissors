@@ -1,2 +1,2 @@
-FROM bitnami/tomcat
-COPY /target/roshambo.war /opt/bitnami/tomcat/webapps/
+FROM tomcat:8.0
+COPY /target/roshambo.war /usr/local/tomcat/webapps/
