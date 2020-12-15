@@ -32,12 +32,25 @@ pipeline {
                 // To run Maven on a Windows agent, use
                 // bat "mvn -Dmaven.test.failure.ignore=true clean package"
             }
+            
+        stage('Deploy_to_docker') {
+            steps {
+                // Get some code from a GitHub repository
+                
+                script {
+                           docker.withRegistry( '', registryCredential ) {
+                                dockerImage.push()
+                           }
+                }    
 
-            post {
-                // If Maven was able to run the tests, even if some of the test
-                // failed, record the test results and archive the jar file.
-                success {
-                    git branch: 'patch-1', url: 'https://github.com/Sarthak100794/rock-paper-scissors'
+                // To run Maven on a Windows agent, use
+                // bat "mvn -Dmaven.test.failure.ignore=true clean package"
+            }
+            
+        stage('Deploy_to_k8s') {
+            steps {
+                // Get some code from a GitHub repository
+                git branch: 'patch-1', url: 'https://github.com/Sarthak100794/rock-paper-scissors'
                 step([$class: 'KubernetesEngineBuilder', 
                         projectId: "practical-case-298304",
                         clusterName: "cluster-1",
@@ -46,8 +59,14 @@ pipeline {
                         credentialsId: "gke",
                         verifyDeployments: false])
                     echo "Pipeline has been successfully completed"
-                }
+                
+                }    
+
+                // To run Maven on a Windows agent, use
+                // bat "mvn -Dmaven.test.failure.ignore=true clean package"
             }
+            
+            
         }
     }
 }
