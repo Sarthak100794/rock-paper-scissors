@@ -5,7 +5,7 @@ metadata:
 spec:
   containers:
   - name: private-reg-container
-    image: sart1007/firstregistery:latest
+    image: sart1007/newrepo:latest
   imagePullSecrets:
   - name: regcred
 
