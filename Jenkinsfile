@@ -32,6 +32,7 @@ pipeline {
                 // To run Maven on a Windows agent, use
                 // bat "mvn -Dmaven.test.failure.ignore=true clean package"
             }
+        }    
             
         stage('Deploy_to_docker') {
             steps {
@@ -46,6 +47,7 @@ pipeline {
                 // To run Maven on a Windows agent, use
                 // bat "mvn -Dmaven.test.failure.ignore=true clean package"
             }
+        }
             
         stage('Deploy_to_k8s') {
             steps {
@@ -68,5 +70,6 @@ pipeline {
             
             
         }
+    }    
     
 
