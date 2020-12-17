@@ -1,6 +1,8 @@
 steps:
-- name: maven:3-jdk-8
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
-  args: ['-c', 'mvn appengine:run']
-timeout: '1600s'
+  args: ['-c']
+- name: maven:3-jdk-8
+  entrypoint: mvn
+  args: ['build']
+
