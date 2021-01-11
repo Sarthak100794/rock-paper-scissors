@@ -2,7 +2,7 @@ steps:
   - id: 'build your instance'
     name: 'maven:3-jdk-8'
     entrypoint: mvn
-    args: ['test']
+    args: ['clean','package']
   - id: 'Deploy to app engine using gcloud image'
     name: 'gcr.io/cloud-builders/gcloud'
     args: ['app', 'deploy', 'target/appengine-staging/app.yaml']
