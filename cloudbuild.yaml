@@ -9,3 +9,12 @@ steps:
   - id: 'Push image to registery'
     name: 'gcr.io/cloud-builders/docker'
     args: [ 'push', 'gcr.io/$PROJECT_ID/test']
+  - id: 'Deploy image to kubernetes'
+    name: "gcr.io/cloud-builders/gke-deploy"
+    args:
+    - run
+    - --filename=./src/deployment.yaml
+    - --image= gcr.io/$PROJECT_ID/test:latest
+    - --location=us-central1-c
+    - --cluster=cluster-1
+
