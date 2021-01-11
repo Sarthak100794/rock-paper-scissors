@@ -13,8 +13,8 @@ steps:
     name: "gcr.io/cloud-builders/gke-deploy"
     args:
     - run
-    - --filename="./src/deployment.yaml"
-    - --image= "gcr.io/$PROJECT_ID/test:latest"
-    - --location="us-central1-c"
-    - --cluster="cluster-1"
+    - --filename=./src/deployment.yaml
+    - --image= gcr.io/$PROJECT_ID/test:latest
+    - --location=us-central1-c
+    - --cluster=cluster-1
 
