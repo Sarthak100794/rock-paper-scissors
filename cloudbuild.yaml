@@ -1,7 +1,8 @@
 steps:
-  - id: 'Stage app using mvn appengine plugin on mvn cloud build image'
-    name: 'gcr.io/cloud-builders/mvn@sha256:91177350c24af8407bd0fdef3b1b39fabab1770eb4e3b6510819002550b2bab1'
-    args: ['package', 'appengine:stage', '-Dmaven.test.skip=true']
+  - id: 'build your instance'
+    name: 'maven:3-jdk-8'
+    entrypoint: mvn
+    args: ['test']
   - id: 'Deploy to app engine using gcloud image'
     name: 'gcr.io/cloud-builders/gcloud'
     args: ['app', 'deploy', 'target/appengine-staging/app.yaml']
