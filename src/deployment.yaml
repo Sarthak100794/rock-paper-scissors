@@ -7,4 +7,4 @@ metadata:
 spec:
   containers:
   - name: private-reg-container
-    image: gcr.io/$PROJECT_ID/test:latest
+    image: gcr.io/practical-case-298304/test:latest
