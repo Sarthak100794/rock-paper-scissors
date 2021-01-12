@@ -14,7 +14,7 @@ steps:
     args:
     - run
     - --filename=./src/deployment.yaml
-    - --image= gcr.io/$PROJECT_ID/test:latest
+    - --image=gcr.io/$PROJECT_ID/test:latest
     - --location=us-central1-c
     - --cluster=cluster-1
 
