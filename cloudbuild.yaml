@@ -1,4 +1,11 @@
 steps:
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+          cd src
+          ls
   - id: 'Sonarqube' 
     name: 'gcr.io/practical-case-298304/testt:latest'
     args:
