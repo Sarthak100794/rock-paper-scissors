@@ -6,7 +6,7 @@ steps:
     args:
       - "-c"
       - |
-          cd ..
+          ls
   - id: 'build your instance'
     name: 'maven:3-jdk-8'
     entrypoint: mvn
