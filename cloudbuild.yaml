@@ -1,8 +1,4 @@
 steps:
-  - id: 'build your instance'
-    name: 'maven:3-jdk-8'
-    entrypoint: mvn
-    args: ['clean','package']
   - id: 'Sonarqube' 
     name: 'gcr.io/practical-case-298304/testt:latest'
     args:
@@ -11,6 +7,10 @@ steps:
     - '-Dsonar.projectKey=mykey'
     - '-Dsonar.qualitygate.wait=true'
     - '-Dsonar.sources=.'
+  - id: 'build your instance'
+    name: 'maven:3-jdk-8'
+    entrypoint: mvn
+    args: ['clean','package']
   - id: 'Deploy to app engine using gcloud image'
     name: 'gcr.io/cloud-builders/docker'
     args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/test', '.' ]
