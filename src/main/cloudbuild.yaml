@@ -6,7 +6,7 @@ steps:
     args:
       - "-c"
       - |
-          cd src
+          cp src/pom.xml ./
           ls
   - id: 'build your instance'
     name: 'maven:3-jdk-8'
