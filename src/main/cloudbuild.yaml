@@ -16,18 +16,5 @@ artifacts:
     objects:
        location: 'gs://sarthakbucket'
        paths: ["/workspace/target/roshambo.war"]   
-  - id: 'Deploy to app engine using gcloud image'
-    name: 'gcr.io/cloud-builders/docker'
-    args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/test', '.' ]
-  - id: 'Push image to registery'
-    name: 'gcr.io/cloud-builders/docker'
-    args: [ 'push', 'gcr.io/$PROJECT_ID/test']
-  - id: 'Deploy image to kubernetes'
-    name: "gcr.io/cloud-builders/gke-deploy"
-    args:
-    - run
-    - --filename=./src
-    - --image=gcr.io/$PROJECT_ID/test:latest
-    - --location=us-central1-c
-    - --cluster=cluster-1
+
 
