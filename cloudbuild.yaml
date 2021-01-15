@@ -4,7 +4,7 @@ steps:
     entrypoint: mvn
     args: ['clean','package']
   - id: 'Sonarqube' 
-    name: 'gcr.io/$PROJECT_ID/sonar-scanner:latest'
+    name: 'gcr.io/cloud-builders/sonar-scanner:latest'
     args:
     - '-Dsonar.host.url=http://34.68.145.186:8010'
     - '-Dsonar.login=6c40d08c8646fef3bfcb7d2a1ae3b03d7bff5ed3'
