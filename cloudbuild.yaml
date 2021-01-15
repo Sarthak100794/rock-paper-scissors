@@ -6,7 +6,7 @@ steps:
   - id: 'Sonarqube' 
     name: 'gcr.io/practical-case-298304/testt:latest'
     args:
-    - 'mvn sonar:sonar -Dsonar.host.url=http://34.68.145.186:8010'
+    - '-Dsonar.host.url=http://34.68.145.186:8010'
     - '-Dsonar.login=6c40d08c8646fef3bfcb7d2a1ae3b03d7bff5ed3'
     - '-Dsonar.projectKey=mykey'
     - '-Dsonar.qualitygate.wait=true'
