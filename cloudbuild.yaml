@@ -2,7 +2,7 @@ steps:
   - id: 'build your instance'
     name: 'maven:3-jdk-8'
     entrypoint: mvn
-    args: ['clean','install']        
+    args: ['sonar:sonar']        
   - id: 'Sonarqube' 
     name: 'gcr.io/practical-case-298304/testt:latest'
     args:
