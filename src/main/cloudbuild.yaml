@@ -19,7 +19,7 @@ steps:
      - '-Dsonar.login=6c40d08c8646fef3bfcb7d2a1ae3b03d7bff5ed3'
      - '-Dsonar.projectKey=mykey'
      - '-Dsonar.qualitygate.wait=true'
-     - '-Dsonar.sources=.'  
+     - '-Dsonar.sources=./target'  
   - id: 'Deploy to app engine using gcloud image'
     name: 'gcr.io/cloud-builders/docker'
     args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/test', '.' ]
