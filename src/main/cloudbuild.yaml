@@ -1,16 +1,17 @@
 steps: 
   
+ 
+  - id: 'build your instance'
+    name: 'maven:3-jdk-8'
+    entrypoint: mvn
+    args: ['clean','package']
   - id: "run bash"
     name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: "bash"
     args:
       - "-c"
       - |
-          ls
-  - id: 'build your instance'
-    name: 'maven:3-jdk-8'
-    entrypoint: mvn
-    args: ['clean','package']
+          ls  
   - id: 'Sonarqube' 
     name: 'gcr.io/$PROJECT_ID/testt:latest'
     args:
