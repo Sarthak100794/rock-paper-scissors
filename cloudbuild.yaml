@@ -9,7 +9,7 @@
     args:
     - '-c'
     - |
-     sed -i -e  "s/private-reg/_TEST/g" deployment.yaml 
+     sed -i -e  "s/private-reg/${_TEST}/g" deployment.yaml 
   - id: Generate maniffest
     name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: /bin/sh
