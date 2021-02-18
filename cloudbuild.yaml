@@ -1,0 +1,14 @@
+  steps:
+  - id: 'build your instance'
+    name: 'maven:3.6.0-jdk-11-slim'
+    entrypoint: mvn
+    args: ['clean','package','-Dmaven.test.skip=true']
+    dir: "run/helloworld"
+  - id: 'Build'
+    name: 'gcr.io/cloud-builders/javac'
+    args: ['Game.java']
+    dir: "src/main/java/com/mcnz/rps"
+  artifacts:
+    objects:
+      location: 'gs://artifacts-bucketss/test'
+      paths: ['Game.java']
