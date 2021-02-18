@@ -3,7 +3,7 @@
     name: 'maven:3.6.0-jdk-11-slim'
     entrypoint: mvn
     args: ['clean','package','-Dmaven.test.skip=true']
-    dir: "run/helloworld"
+  #  dir: "run/helloworld"
   - id: 'Build'
     name: 'gcr.io/cloud-builders/javac'
     args: ['Game.java']
