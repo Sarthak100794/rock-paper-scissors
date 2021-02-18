@@ -2,6 +2,11 @@
   - id: 'build your instance'
     name: 'maven:3.6.0-jdk-11-slim'
     entrypoint: mvn
+    args: ['clean','package','-Dmaven.test.skip=true']
+  #  dir: "src/main/java/com/mcnz/rps"
+  - id: 'build your instance'
+    name: 'maven:3.6.0-jdk-11-slim'
+    entrypoint: mvn
     args: ['compile','exec:java','-Dexec.mainClass=com.example.Game']
     dir: "src/main/java/com/mcnz/rps"
   
