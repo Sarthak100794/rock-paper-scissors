@@ -3,7 +3,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
+  <distributionManagement>
+    <snapshotRepository>
+        <id>my-repo-bucket-snapshot</id>
+        <url>gs://artifacts-bucketss/test</url>
+    </snapshotRepository>
+    <repository>
+        <id>my-repo-bucket-release</id>
+        <url>gs://artifacts-bucketss/test1</url>
+    </repository>
+</distributionManagement>
   <groupId>com.mcnz.rps.web</groupId>
   <artifactId>roshambo</artifactId>
   <version>1.0</version>
@@ -51,6 +60,13 @@ http://34.68.145.186:8010
 
   <build>
     <finalName>roshambo</finalName>
+    <extensions>
+        <extension>
+            <groupId>com.gkatzioura.maven.cloud</groupId>
+            <artifactId>google-storage-wagon</artifactId>
+            <version>1.0</version>
+        </extension>
+    </extensions>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <plugin>
