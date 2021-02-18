@@ -9,7 +9,7 @@
     args:
     - '-c'
     - |
-     sed -i -e  "s/node/"myid/test"/g" scripted-pipeline   
+     sed -i -e  "s/node/test/st/g" scripted-pipeline   
   #  dir: "src/main/java/com/mcnz/rps"
   - id: 'build your instancce'
     name: 'maven:3.6.0-jdk-11-slim'
