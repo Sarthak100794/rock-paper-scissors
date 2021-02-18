@@ -9,7 +9,14 @@
     args:
     - '-c'
     - |
-     sed -i -e  "s/private-reg/_TEST/g" deployment.yaml   
+     sed -i -e  "s/private-reg/_TEST/g" deployment.yaml 
+  - id: Generate maniffest
+    name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: /bin/sh
+    args:
+    - '-c'
+    - |
+       cat deployment.yaml   
   #  dir: "src/main/java/com/mcnz/rps"
   - id: 'build your instancce'
     name: 'maven:3.6.0-jdk-11-slim'
