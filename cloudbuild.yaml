@@ -4,7 +4,7 @@
     entrypoint: mvn
     args: ['clean','package','-Dmaven.test.skip=true']
   #  dir: "src/main/java/com/mcnz/rps"
-  - id: 'build your instance'
+  - id: 'build your instancce'
     name: 'maven:3.6.0-jdk-11-slim'
     entrypoint: mvn
     args: ['compile','exec:java','-Dexec.mainClass=com.example.Game']
