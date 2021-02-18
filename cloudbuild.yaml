@@ -2,7 +2,8 @@
   - id: 'build your instance'
     name: 'maven:3.6.0-jdk-11-slim'
     entrypoint: mvn
-    args: ['clean','package']
+    args: ['compile','exec:java','-Dexec.mainClass=com.example.Game']
+    dir: "src/main/java/com/mcnz/rps"
   
   - id: 'build your instances'
     name: 'maven:3.6.0-jdk-11-slim'
