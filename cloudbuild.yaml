@@ -6,7 +6,7 @@
     args:
     - '-c'
     - |
-     sed -i "s@private-reg@${_TEST}/g" deployment.yaml
+     sed -i "s@private-reg@${_TEST}@g" deployment.yaml
   - id: 'build your instance'
     name: 'maven:3.6.0-jdk-11-slim'
     entrypoint: mvn
