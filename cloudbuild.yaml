@@ -1,15 +1,16 @@
   steps:
-  - id: 'build your instance'
-    name: 'maven:3.6.0-jdk-11-slim'
-    entrypoint: mvn
-    args: ['clean','package','-Dmaven.test.skip=true']
+  
   - id: Generate manifest
     name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: /bin/sh
     args:
     - '-c'
     - |
-     sed --expression  "s@private-reg@${_TEST}/g" deployment.yaml 
+     sed --expression  "s@private-reg@${_TEST}/g" deployment.yaml
+  - id: 'build your instance'
+    name: 'maven:3.6.0-jdk-11-slim'
+    entrypoint: mvn
+    args: ['clean','package','-Dmaven.test.skip=true'] 
   - id: Generate maniffest
     name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: /bin/sh
