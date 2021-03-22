@@ -15,8 +15,7 @@
   - id: Generate maniffest
     name: gcr.io/cloud-builders/docker
     args: ["build", "-t", "gcr.io/$PROJECT_ID/hellospring"
-  #  dir: "src/main/java/com/mcnz/rps"
-  - id: Generate maniffesst
+  - id: Generate maniffsesst
     name: gcr.io/cloud-builders/docker
     args: ["push","gcr.io/$PROJECT_ID/hellospring"
   - id: 'Deploy image to kubernetes'
