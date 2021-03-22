@@ -13,29 +13,16 @@
     entrypoint: mvn
     args: ['clean','package','-Dmaven.test.skip=true'] 
   - id: Generate maniffest
-    name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: /bin/sh
-    args:
-    - '-c'
-    - |
-       cat deployment.yaml   
+    name: gcr.io/cloud-builders/docker
+    args: ["build", "-t", "gcr.io/$PROJECT_ID/hellospring"
   #  dir: "src/main/java/com/mcnz/rps"
-  - id: 'build your instancce'
-    name: 'maven:3.6.0-jdk-11-slim'
-    entrypoint: mvn
-    args: ['spring-boot:run']
-    dir: "src/main/java/com/mcnz/rps"
-  
-  - id: 'build your instances'
-    name: 'maven:3.6.0-jdk-11-slim'
-    entrypoint: mvn
-    args: ['deploy']  
-  #  dir: "run/helloworld"
-  - id: 'Build'
-    name: 'gcr.io/cloud-builders/javac'
-    args: ['Game.java']
-    dir: "src/main/java/com/mcnz/rps"
-  artifacts:
-    objects:
-      location: 'gs://artifacts-bucketss/test'
-      paths: ['Game.java']
+  - id: Generate maniffesst
+    name: gcr.io/cloud-builders/docker
+    args: ["push","gcr.io/$PROJECT_ID/hellospring"
+  - id: 'Deploy image to kubernetes'
+    name: 'gcr.io/cloud-builders/gke-deploy'
+    args:
+    - run
+    - --filename=./run/helloworld/src/deployment.yaml
+    - --location=us-central1-c
+    - --cluster=cluster-1
