@@ -25,3 +25,4 @@
     - --filename=./deployment.yaml
     - --location=us-central1-c
     - --cluster=cluster-1
+    - --project={$PROJECT_ID}
