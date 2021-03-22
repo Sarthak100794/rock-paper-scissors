@@ -23,6 +23,6 @@
     name: 'gcr.io/cloud-builders/gke-deploy'
     args:
     - run
-    - --filename=./run/helloworld/src/deployment.yaml
+    - --filename=./deployment.yaml
     - --location=us-central1-c
     - --cluster=cluster-1
