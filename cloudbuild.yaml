@@ -18,6 +18,15 @@
   - id: Generate maniffsesst
     name: gcr.io/cloud-builders/docker
     args: ["push","gcr.io/$PROJECT_ID/hellospring"]
+  - id: "Cleaning the old deployment" #This is the temporary step which will be deleted after versioning of images
+    name: 'gcr.io/cloud-builders/kubectl'  
+    args:
+    - 'delete'
+    - 'pod' 
+    - '--all'
+    - --location=us-central1-c
+    - --cluster=cluster-1
+    - --project=galvanic-kit-303008
   - id: 'Deploy image to kubernetes'
     name: 'gcr.io/cloud-builders/gke-deploy'
     args:
