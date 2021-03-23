@@ -24,9 +24,10 @@
     - 'delete'
     - 'pod' 
     - '--all'
-    - --location=us-central1-c
-    - --cluster=cluster-1
-    - --project=galvanic-kit-303008
+    env:
+    - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
+    - 'CLOUDSDK_CONTAINER_CLUSTER=cluster-1'
+    - 'CLOUDSDK_CORE_PROJECT=galvanic-kit-303008'
   - id: 'Deploy image to kubernetes'
     name: 'gcr.io/cloud-builders/gke-deploy'
     args:
