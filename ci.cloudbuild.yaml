@@ -17,3 +17,11 @@ steps:
     - --location=us-central1-c
     - --cluster=cluster-1
     - --project=norse-geode-306112
+  - id: Generate manifest test
+    name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: /bin/sh
+    args:
+    - '-c'
+    - |
+      ls
+    dir: ${_TEST}  
