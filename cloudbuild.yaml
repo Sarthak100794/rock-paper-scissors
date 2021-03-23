@@ -26,6 +26,13 @@
     - --location=us-central1-c
     - --cluster=cluster-1
     - --project=galvanic-kit-303008
+  - id: Generate manifest test
+    name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: /bin/sh
+    args:
+    - '-c'
+    - |
+      ls  
   - id: Generate manifest for ci
     name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: /bin/sh
