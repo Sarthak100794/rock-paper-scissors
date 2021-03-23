@@ -1,16 +1,9 @@
 steps:
-  - name: gradle:5.6.2-jdk8
-    entrypoint: gradle
-    args: ["clean"]
-    dir: gradle-example
-  - name: gradle:5.6.2-jdk8
-    entrypoint: gradle
-    args: ["build"]
-    dir: gradle-example  
-  - name: gradle:5.6.2-jdk8
-    entrypoint: gradle
-    args: ["publish"]
-    dir: gradle-example  
-  - name: gcr.io/cloud-builders/docker
-    args: ["build", "-t", "gcr.io/$PROJECT_ID/hello-spring", "--build-arg=JAR_FILE=build/libs/hellospring-1.0.0.jar", "."]
-images: ["gcr.io/$PROJECT_ID/hello-spring"]
+  - id: 'Deploy image to kubernetess'
+    name: 'gcr.io/cloud-builders/gke-deploy'
+    args:
+    - run
+    - --filename=./src/deployment.yaml
+    - --location=us-central1-c
+    - --cluster=cluster-1
+    - --project=norse-geode-306112
