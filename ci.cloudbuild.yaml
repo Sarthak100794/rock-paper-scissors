@@ -1,4 +1,14 @@
 steps:
+  - id: "Cleaning the old deployments" #This is the temporary step which will be deleted after versioning of images
+    name: 'gcr.io/cloud-builders/kubectl'  
+    args:
+    - 'delete'
+    - 'pod' 
+    - '--all'
+    env:
+    - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
+    - 'CLOUDSDK_CONTAINER_CLUSTER=cluster-1'
+    - 'CLOUDSDK_CORE_PROJECT=norse-geode-306112'
   - id: 'Deploy image to kubernetess'
     name: 'gcr.io/cloud-builders/gke-deploy'
     args:
