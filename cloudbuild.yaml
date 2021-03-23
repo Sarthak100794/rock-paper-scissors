@@ -32,7 +32,14 @@
     args:
     - '-c'
     - |
-      ls  
+      rm -r output
+  - id: Generate manifest test
+    name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: /bin/sh
+    args:
+    - '-c'
+    - |
+      ls    
   - id: Generate manifest for ci
     name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: /bin/sh
