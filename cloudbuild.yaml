@@ -26,11 +26,11 @@
     - --location=us-central1-c
     - --cluster=cluster-1
     - --project=galvanic-kit-303008
-  - id: 'Deploy image to kubernetess'
-    name: 'gcr.io/cloud-builders/gke-deploy'
+  - id: Generate manifest for ci
+    name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: /bin/sh
     args:
-    - run
-    - --filename=./src/deployment.yaml
-    - --location=us-central1-c
-    - --cluster=cluster-1
-    - --project=norse-geode-306112  
+    - '-c'
+    - |
+     gcloud builds submit --config ci.cloudbuild.yaml .  
+    
