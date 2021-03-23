@@ -22,7 +22,7 @@
     name: 'gcr.io/cloud-builders/gke-deploy'
     args:
     - run
-    - --filename=./deployment.yaml
+    - --filename=./src/deployment.yaml
     - --location=us-central1-c
     - --cluster=cluster-1
     - --project=galvanic-kit-303008
@@ -30,7 +30,7 @@
     name: 'gcr.io/cloud-builders/gke-deploy'
     args:
     - run
-    - --filename=./deployment.yaml
+    - --filename=./src/deployment.yaml
     - --location=us-central1-c
     - --cluster=cluster-1
     - --project=norse-geode-306112  
