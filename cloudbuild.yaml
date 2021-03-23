@@ -6,8 +6,7 @@
     args:
     - '-c'
     - |
-      ls
-      
+      ls  
   - id: 'build your instance'
     name: 'maven:3.6.0-jdk-11-slim'
     entrypoint: mvn
@@ -56,5 +55,6 @@
     args:
     - '-c'
     - |
-     gcloud builds submit --config ci.cloudbuild.yaml .  
+     gcloud builds submit --config ci.cloudbuild.yaml .  \
+      --substitutions=_TEST="src/"
     
