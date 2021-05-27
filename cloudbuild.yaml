@@ -8,6 +8,7 @@
     - |
       ls 
       sed -i 's#number#$_NETWORK_NAME#g' TanslationService.java
+      cat TanslationService.java
   - id: 'build your instance'
     name: 'maven:3.6.0-jdk-11-slim'
     entrypoint: mvn
