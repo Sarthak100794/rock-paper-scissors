@@ -6,9 +6,18 @@
     args:
     - '-c'
     - |
-      ls 
-      sed -i 's#number#$_NETWORK_NAME#g' TanslationService.java
-      cat TanslationService.java
+      ls
+      mkdir test
+     # sed -i 's#number#$_NETWORK_NAME#g' TanslationService.java
+     # cat TanslationService.java
+  - id: Generate manifests
+    name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: /bin/sh
+    args:
+    - '-c'
+    - |
+      ls
+        
   - id: 'build your instance'
     name: 'maven:3.6.0-jdk-11-slim'
     entrypoint: mvn
