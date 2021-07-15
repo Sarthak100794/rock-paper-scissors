@@ -4,6 +4,7 @@ version: 0.2
 phases:
   build:
     commands:
-      - echo "${AWS_ACCOUNT_ID}"
+      - echo "${CODEBUILD_BUILD_NUMBER}"
       - echo "${AWS_DEFAULT_REGION}"
+      
  
