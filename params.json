@@ -1,0 +1,38 @@
+[
+    {
+      "ParameterKey": "GitHubRepo",
+      "ParameterValue": "ml-build"
+    },
+    {
+        "ParameterKey": "GitHubBranch",
+        "ParameterValue": "master"
+      },
+      {
+        "ParameterKey": "GitHubToken",
+        "ParameterValue": "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"
+      },
+      {
+        "ParameterKey": "GitHubUser",
+        "ParameterValue": "mailamiton"
+      },
+      {
+        "ParameterKey": "ArtifactBucket",
+        "ParameterValue": "sagemaker-project-ml-1019"
+      },
+      {
+        "ParameterKey": "S3ModelBucket",
+        "ParameterValue": "sagemaker-project-ml-1019"
+      },
+      {
+        "ParameterKey": "BaseRepositoryURI",
+        "ParameterValue": "685306736016.dkr.ecr.eu-west-1.amazonaws.com/codepipeline-ecr-build-sf-execution-repository-hnkbim8hx68j"
+      },
+      {
+        "ParameterKey": "BaseRepositoryARN",
+        "ParameterValue": "arn:aws:ecr:eu-west-1:685306736016:repository/codepipeline-ecr-build-sf-execution-repository-hnkbim8hx68j"
+      },
+      {
+        "ParameterKey": "BaseRepositoryName",
+        "ParameterValue": "codepipeline-ecr-build-sf-execution-repository-hnkbim8hx68j"
+      }
+]

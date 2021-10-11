@@ -1,0 +1,598 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  GitHubRepo:
+    Type: String
+  GitHubBranch:
+    Type: String
+  GitHubToken:
+    Type: String
+    NoEcho: true
+  GitHubUser:
+    Type: String
+  ArtifactBucket:
+    Type: String
+  BaseRepositoryURI:
+    Type: String
+  BaseRepositoryARN:
+    Type: String
+  BaseRepositoryName:
+    Type: String
+  S3ModelBucket:
+    Type: String
+  StateMachineName:
+    Description: Name of State Machine
+    Type: String
+    Default: MLOpsBuildStepFunction
+Resources:
+  CodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Resource: "*"
+                Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                  - ecr:GetAuthorizationToken                                         
+              - Resource: !Sub arn:aws:s3:::${ArtifactBucket}/*
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:GetObjectVersion
+              #- Resource: !Ref ${BaseRepositoryARN}
+              - Resource: !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${BaseRepositoryName}
+                Effect: Allow
+                Action:
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:BatchGetImage
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:PutImage
+                  - ecr:InitiateLayerUpload
+                  - ecr:UploadLayerPart
+                  - ecr:CompleteLayerUpload
+  CodePipelineServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Resource:
+                  - !Sub arn:aws:s3:::${ArtifactBucket}/*
+                Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                  - s3:GetBucketVersioning
+              - Resource: "*"
+                Effect: Allow
+                Action:                  
+                  - codebuild:StartBuild
+                  - codebuild:BatchGetBuilds
+                  - iam:PassRole
+                  - states:DescribeStateMachine
+                  - states:StartExecution
+                  - states:DescribeExecution
+  SageMakerRole:
+      Type: AWS::IAM::Role
+      Properties:       
+        AssumeRolePolicyDocument: 
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - sagemaker.amazonaws.com
+              Action:
+                - 'sts:AssumeRole'
+        Description: String
+        ManagedPolicyArns:
+          - !Ref SagemakerPolicy    
+        Path: /      
+  SagemakerPolicy:
+      Type: 'AWS::IAM::ManagedPolicy'
+      Properties:
+        Description: Step function use policy
+        PolicyDocument: !Sub
+            - |-
+              {
+                      "Version": "2012-10-17",
+                      "Statement": [
+                        {
+                              "Effect": "Allow",
+                              "Action": [
+                                  "cloudwatch:PutMetricData",                                  
+                                  "logs:CreateLogGroup",
+                                  "logs:CreateLogStream",
+                                  "logs:DescribeLogStreams",
+                                  "logs:PutLogEvents",
+                                  "logs:GetLogEvents",                                                                                             
+                                  "sagemaker:*"                                                             
+                              ],
+                              "Resource": [
+                                  "*"
+                              ]
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "iam:PassRole"
+                            ],
+                            "Resource": "*",
+                            "Condition": {
+                                "StringEquals": {
+                                    "iam:PassedToService": "sagemaker.amazonaws.com"
+                                }
+                            }
+                        },
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "ecr:GetAuthorizationToken",
+                                "ecr:BatchCheckLayerAvailability",
+                                "ecr:GetDownloadUrlForLayer",
+                                "ecr:BatchGetImage"
+                            ],
+                            "Resource": ["*"]
+                        },                        
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "s3:ListBucket",
+                                "s3:GetObject",
+                                "s3:PutObject",
+                                "s3:DeleteObject"
+                            ],
+                            "Resource": [
+                                "arn:aws:s3:::${S3ModelBucket}",
+                                "arn:aws:s3:::${S3ModelBucket}/*"
+                            ]
+                        }
+                      ]
+              }
+            - {
+                AccountID: !Ref AWS::AccountId, 
+                Region: !Ref AWS::Region,
+                S3ModelBucket: !Ref S3ModelBucket  
+              }  
+  StepFunctionsRole:
+      Type: AWS::IAM::Role
+      Properties:       
+        AssumeRolePolicyDocument: 
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - states.amazonaws.com
+              Action:
+                - 'sts:AssumeRole'
+        Description: String
+        ManagedPolicyArns:
+          - !Ref StepFunctionsPolicy    
+        Path: /      
+  StepFunctionsPolicy:
+      Type: 'AWS::IAM::ManagedPolicy'
+      DependsOn: SageMakerRole
+      Properties:
+        Description: Step function use policy
+        PolicyDocument: !Sub
+            - |-
+              {
+                      "Version": "2012-10-17",
+                      "Statement": [
+                        {
+                              "Effect": "Allow",
+                              "Action": [
+                                  "lambda:InvokeFunction",                                  
+                                  "states:StartExecution"                                                                 
+                              ],
+                              "Resource": [
+                                  "*"
+                              ]
+                          },                          
+                          {
+                            "Effect": "Allow",
+                            "Action": [
+                              "sagemaker:CreateTrainingJob",
+                              "sagemaker:DescribeTrainingJob",
+                              "sagemaker:StopTrainingJob",
+                              "sagemaker:CreateModel",
+                              "sagemaker:CreateTransformJob",
+                              "sagemaker:CreateEndpointConfig",
+                              "sagemaker:CreateEndpoint"
+                            ],
+                            "Resource": [
+                              "arn:aws:sagemaker:${Region}:${AccountID}:training-job/*",
+                              "arn:aws:sagemaker:${Region}:${AccountID}:model/*",
+                              "arn:aws:sagemaker:${Region}:${AccountID}:transform-job/*",
+                              "arn:aws:sagemaker:${Region}:${AccountID}:endpoint-config/*",
+                              "arn:aws:sagemaker:${Region}:${AccountID}:endpoint/*"
+                            ]
+                          },
+                          {
+                            "Effect": "Allow",
+                            "Action": [
+                              "sagemaker:ListTags"
+                            ],
+                            "Resource": [
+                              "*"
+                            ]
+                          },
+                          {
+                            "Effect": "Allow",
+                            "Action": [
+                              "iam:PassRole"
+                            ],
+                            "Resource": [
+                              "${SageMakerRole}"
+                            ],
+                            "Condition": {
+                              "StringEquals": {
+                                "iam:PassedToService": "sagemaker.amazonaws.com"
+                              }
+                            }
+                          },
+                          {
+                            "Effect": "Allow",
+                            "Action": [
+                              "events:PutTargets",
+                              "events:PutRule",
+                              "events:DescribeRule"
+                            ],
+                            "Resource": [
+                              "arn:aws:events:${Region}:${AccountID}:rule/StepFunctionsGetEventsForSageMakerTrainingJobsRule",
+                              "arn:aws:events:${Region}:${AccountID}:rule/StepFunctionsGetEventsForSageMakerTransformJobsRule"
+                            ]
+                          }  
+                      ]
+                }
+            - {
+                AccountID: !Ref AWS::AccountId, 
+                Region: !Ref AWS::Region,
+                SageMakerRole: !GetAtt SageMakerRole.Arn
+                
+              }
+
+  #SNS For Sending Approval Email 
+  SNSApprovalEmail:
+    Type: AWS::SNS::Topic
+    Properties:       
+      TopicName: SNSApprovalEmail
+  #API Gateway behind which lamdas will work
+  HttpAPI:
+    Type: AWS::ApiGateway::RestApi
+    Properties:      
+      Description: Sagemaker Utility API Gateway 
+      Name: sagemaker-util-api-gateway  
+  MLOpsStateMachine:
+    Type: AWS::StepFunctions::StateMachine # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
+    Properties:
+      Name: !Sub ${StateMachineName}-${AWS::AccountId}
+      DefinitionS3Location:
+        Bucket: !Ref ArtifactBucket
+        Key: mlops.json
+      DefinitionSubstitutions:
+        CreateAndEmailLinkFnName: !Ref CreateAndEmailLinks
+        UpdateSagemakerEndpointAPI: !GetAtt UpdateSagemakerEndpointAPI.Arn
+        S3ModelBucket: !Ref S3ModelBucket
+        SagemakerRoleArn: !GetAtt SageMakerRole.Arn
+      RoleArn: !GetAtt StepFunctionsRole.Arn
+
+
+  UpdateSagemakerEndpointLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: SNSPublishMessagePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 
+                   - lambda:UpdateFunctionConfiguration
+                Resource: '*'
+                #Resource: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:${TestSagemakerEndpoint}
+              - Effect: Allow
+                Action:
+                  - sagemaker:DescribeEndpoint
+                Resource: '*'  
+  UpdateSagemakerEndpointAPI:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: |
+          import os,traceback, jsons
+          import logging
+          import boto3
+          from time import sleep
+
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          api_id=os.environ['HttpApiID']
+          sns_arn=os.environ['SNSArn']
+
+          lambda_client =  boto3.client('lambda')
+          sns = boto3.client('sns')
+          sagemaker=boto3.client('sagemaker')
+
+          def lambda_handler(event, context):
+              print(event)     
+              sagemaker_endpoint= event['EndpointArn'].split('endpoint/')[1]       
+              sagemaker_response = sagemaker.describe_endpoint(
+                          EndpointName=sagemaker_endpoint
+                      )        
+              status = sagemaker_response['EndpointStatus']
+              print(f'Sagemaker Endpoint {status=}')
+
+              while status == 'Creating':
+                  sagemaker_response = sagemaker.describe_endpoint(
+                          EndpointName=sagemaker_endpoint
+                      )        
+                  status = sagemaker_response['EndpointStatus']
+                  print(f'Sagemaker Endpoint {status=}')
+                  sleep(10)    # 5 second throttle
+
+              msg_body=''
+              if status == 'InService':           
+                  url_template_sucess = f'https://{api_id}.execute-api.us-east-1.amazonaws.com/v1/invokeSagemakerAPI?sagemaker_endpoint={sagemaker_endpoint}'
+                  msg_body = f'''
+                      API Sagemaker Inference Endpoint: {url_template_sucess}            
+                  '''
+                  print(f'{url_template_sucess=}')
+              else:
+                  msg_body =f'ERROR creating Sagemaker Endpoint {status=} '         
+                  print(f'ERROR creating Sagemaker Endpoint {status=} ')
+              
+
+              sns_response = sns.publish(
+                      TopicArn=sns_arn,    
+                      Message=msg_body,
+                      Subject='Sagemaker Inference endpoint',
+                      MessageStructure='string'
+                  )
+
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps('Email sent with API endpoint')
+              }    
+      Role: !GetAtt UpdateSagemakerEndpointLambdaRole.Arn
+      Handler: index.lambda_handler
+      Runtime: python3.8
+      Timeout: 600
+
+  CreateAndEmailLinksLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: SNSPublishMessagePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: 
+                   - lambda:UpdateFunctionConfiguration
+                   - SNS:Publish
+                Resource: '*'
+                #Resource: !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:${TestSagemakerEndpoint}
+              - Effect: Allow
+                Action:
+                  - sagemaker:DescribeEndpoint
+                Resource: '*'  
+
+  CreateAndEmailLinks:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: |
+          import json
+          import base64
+          import datetime
+          import os
+          import uuid
+          import sys
+          import traceback
+          import boto3
+          import urllib.parse
+
+          sns = boto3.client('sns')
+
+          def lambda_handler(event, context):
+              # TODO implement
+              print(event) 
+            
+              s3_batch_output=event['s3_batch_output']
+              print(f'{s3_batch_output=}')
+              api_id=os.environ['HttpApiID']
+              sns_arn=os.environ['SNSArn']
+              task_token= event['token']
+              url_template_sucess = f'https://{api_id}.execute-api.us-east-1.amazonaws.com/v1/respond?type=success&{urllib.parse.urlencode({"token":{task_token}})}'
+              url_template_fail = f'https://{api_id}.execute-api.us-east-1.amazonaws.com/v1/respond?type=fail&{urllib.parse.urlencode({"token":{task_token}})}'
+              #encoded_str=urllib.parse.urlencode(url_template_sucess)
+              msg_body = f'''
+                  Please find the transformed data in S3 bucket {s3_batch_output}, based on your findings approve or reject enpoint request</title> <body> Please find the transformed data in S3 bucket s3://mlops-cicd/output, based on your findings approve or reject enpoint request
+                  
+                  Accept: {url_template_sucess}
+
+                  Reject: {url_template_fail}
+
+              '''
+
+              response = sns.publish(
+                  TopicArn=sns_arn,    
+                  Message=msg_body,
+                  Subject='Approve or Reject',
+                  MessageStructure='string'
+              )  
+              return {
+                  'statusCode': 200,
+                  'body': json.dumps('Email send to Approve or Reject batch transform results')
+              }
+      Handler: index.lambda_handler
+      Runtime: python3.8
+      Role: !GetAtt CreateAndEmailLinksLambdaRole.Arn 
+      Environment:
+        Variables:
+          HttpApiID: !Ref HttpAPI
+          SNSArn: !Ref SNSApprovalEmail
+
+
+  AppPipelineWebhook:
+    Type: AWS::CodePipeline::Webhook
+    Properties:
+      Authentication: GITHUB_HMAC
+      AuthenticationConfiguration:
+        SecretToken: !Ref GitHubToken
+      Filters:
+        - 
+          JsonPath: "$.ref"
+          MatchEquals: refs/heads/master
+      TargetPipeline: !Ref Pipeline
+      TargetAction: CodeRepo
+      Name: AppPipelineBuildWebhook
+      TargetPipelineVersion: !GetAtt Pipeline.Version
+      RegisterWithThirdParty: true
+
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Type: CODEPIPELINE
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            pre_build:
+              commands:
+                - printenv | less
+                - $(aws ecr get-login --no-include-email)
+                - dt=`date '+%m-%d-%Y-%H-%M-%S'`
+                - TAG="$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)-${dt}"                
+                - IMAGE_URI="${REPOSITORY_URI}:${TAG}"
+                - echo "IMAGE_URI=${IMAGE_URI}"
+            build:
+              commands:
+                - cd container
+                - docker build --tag "$IMAGE_URI" .
+            post_build:
+              commands:
+                - docker push "$IMAGE_URI"
+                - cd ..
+                - printf '{"commitID":"%s","imageUri":"%s"}' "$TAG" "$IMAGE_URI" > sf_start_params.json
+          artifacts:
+            files: sf_start_params.json
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/docker:17.09.0
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: AWS_DEFAULT_REGION
+            Value: !Ref AWS::Region
+          - Name: REPOSITORY_URI
+            #Value: !Ref ${BaseRepositoryURI}
+            Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${BaseRepositoryName}
+      Name: !Ref AWS::StackName
+      ServiceRole: !Ref CodeBuildServiceRole  
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      RoleArn: !GetAtt CodePipelineServiceRole.Arn
+      ArtifactStore:
+        Type: S3
+        Location: !Ref ArtifactBucket
+      Stages:
+        - Name: GetSource
+          Actions:
+            - Name: CodeRepo
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Version: 1
+                Provider: GitHub
+              Configuration:
+                Owner: !Ref GitHubUser
+                Repo: !Ref GitHubRepo
+                Branch: !Ref GitHubBranch
+                OAuthToken: !Ref GitHubToken
+              OutputArtifacts:
+                - Name: App
+              RunOrder: 1       
+        - Name: BuildContainerandExecuteStepfunction
+          Actions:
+            - Name: BuildCustomContainerImage
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref CodeBuildProject
+              InputArtifacts:
+                - Name: App
+              OutputArtifacts:
+                - Name: BuildOutputImage
+              RunOrder: 1
+            - Name: ExecuteSagemakerMLOpsStepFunction
+              InputArtifacts:
+                - Name: BuildOutputImage
+              ActionTypeId:
+                Category: Invoke
+                Owner: AWS
+                Version: 1
+                Provider: StepFunctions
+              OutputArtifacts:
+                - Name: myOutputArtifact
+              Configuration:
+                StateMachineArn: !GetAtt MLOpsStateMachine.Arn
+                ExecutionNamePrefix: my-prefix
+                InputType: FilePath
+                Input: sf_start_params.json
+              RunOrder: 2  
+Outputs:
+  PipelineUrl:
+    Value: !Sub https://console.aws.amazon.com/codepipeline/home?region=${AWS::Region}#/view/${Pipeline}
+  ArtifactBucket:
+    Value: !Ref ArtifactBucket
