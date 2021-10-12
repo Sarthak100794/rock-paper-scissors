@@ -37,7 +37,7 @@ node {
       if (response=="Yes") {
          echo "I agree!"
       } else {
-         echo "You are hard to please."
+         echo "Yodu are hard to please."
       }
    }
 }
