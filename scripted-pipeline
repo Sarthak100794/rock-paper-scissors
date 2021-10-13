@@ -22,7 +22,7 @@ node {
 
    stage('Compile'){
   
-       // build job: 'Compile-RPS'
+       // build job: 'Compile-RPSs'
    }
    
    stage('Acceptance') {
